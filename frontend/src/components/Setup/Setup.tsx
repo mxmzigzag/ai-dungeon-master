@@ -1,5 +1,6 @@
 import { useState, type FC } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { startGameMutation } from "@api/mutations/game";
 import type { ISetupStepOption, ISetupStepOptionWithCustomPrompt } from "@/types/setupSteps";
 import { STEP_OPTIONS_MAP, STORYTELLING_STEPS_MAP } from "@constants/setupSteps";
 import { PageLayout } from "../PageLayout/PageLayout";
@@ -8,17 +9,18 @@ import { StorytellingPanel } from "../StorytellingPanel";
 import { SetupOption } from "./SetupOption/SetupOption";
 
 const Setup: FC<ISetupProps> = ({ currentStep, onChangeStep }) => {
-  const { gameID } = useParams<{ gameID: string }>();
-  const navigate = useNavigate();
   const [selectedOptions, setSelectedOptions] = useState<Record<number, ISetupStepOption>>({});
   const [customSettings, setCustomSettings] = useState<Record<number, string>>({});
   
-
   const stepTitle = STORYTELLING_STEPS_MAP[currentStep]?.title || 'unknown step';
   const promptText = STORYTELLING_STEPS_MAP[currentStep]?.prompt || 'unknown prompt';
   const stepOptions = STEP_OPTIONS_MAP[currentStep] || [];
 
   const usedSteps = Object.keys(STORYTELLING_STEPS_MAP);
+
+  const { mutate: startGame } = useMutation({
+    mutationFn: startGameMutation
+  });
   
   const handleOptionClick = (option: ISetupStepOption) => {
     setSelectedOptions({ ...selectedOptions, [currentStep]: option });
@@ -35,9 +37,7 @@ const Setup: FC<ISetupProps> = ({ currentStep, onChangeStep }) => {
           return [Number(key), {...option, customPrompt: customSettings[Number(key)] || ''}];
         })
     );
-    
-    console.log('ZXC', readyInfo);
-    navigate(`/${gameID}/game`);
+    startGame(readyInfo);
   }
 
   return (
