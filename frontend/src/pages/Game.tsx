@@ -1,5 +1,5 @@
-import { StorytellingPanel } from "../components/StorytellingPanel/StorytellingPanel"
 import { Link, useParams } from "react-router-dom"
+import { StorytellingPanel } from "@components/StorytellingPanel/StorytellingPanel"
 
 export function Game() {
   const { gameID } = useParams<{ gameID: string }>()

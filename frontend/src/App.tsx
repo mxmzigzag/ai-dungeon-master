@@ -1,5 +1,8 @@
 import { Routes, Route } from 'react-router-dom'
-import { Home, SetupPage, Game, NotFound } from './pages'
+import { Home } from '@pages/Home'
+import { SetupPage } from '@pages/Setup'
+import { Game } from '@pages/Game'
+import { NotFound } from '@pages/NotFound'
 
 function App() {
   return (

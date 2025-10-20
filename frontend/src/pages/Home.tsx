@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 import { v4 as uuidv4 } from 'uuid'
-import { StorytellingPanel } from "../components/StorytellingPanel/StorytellingPanel"
+import { StorytellingPanel } from "@components/StorytellingPanel/StorytellingPanel"
 
 export function Home() {
   // Generate a unique game ID using UUID v4

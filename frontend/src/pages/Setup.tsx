@@ -1,5 +1,5 @@
-import { Setup } from "../components/Setup/Setup"
 import { Link, useParams } from "react-router-dom"
+import { Setup } from "@components/Setup/Setup"
 
 export function SetupPage() {
   const { gameID } = useParams<{ gameID: string }>()
