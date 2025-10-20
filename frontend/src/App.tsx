@@ -1,20 +1,14 @@
-import { StorytellingPanel } from "./components/StorytellingPanel/StorytellingPanel"
+import { Routes, Route } from 'react-router-dom'
+import { Home, SetupPage, Game, NotFound } from './pages'
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-600">
-      <div className="container mx-auto p-8 flex flex-col items-center justify-center gap-12">
-        <h1 className="text-4xl font-bold text-center text-white">
-          AI Dungeon Master
-        </h1>
-
-        <StorytellingPanel text="Hello, are you ready to embark on an adventure?" />
-
-        <button className="bg-blue-500 text-white px-4 py-2 rounded-md">
-          Start Adventure
-        </button>
-      </div>
-    </div>
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/:gameID/setup" element={<SetupPage />} />
+      <Route path="/:gameID/game" element={<Game />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   )
 }
 
