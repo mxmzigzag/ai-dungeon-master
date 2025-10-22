@@ -18,22 +18,31 @@ Express.js backend with TypeScript, OpenAI integration, and CORS support.
 npm install
 ```
 
-2. Copy environment file:
+2. Set up environment files:
 ```bash
-cp env.example .env
+# For development
+npm run setup:env
+
+# For production
+npm run setup:prod
 ```
 
-3. Configure your environment variables in `.env`:
-```
-OPENAI_API_KEY=your_openai_api_key_here
-PORT=3001
-NODE_ENV=development
-CORS_ORIGIN=http://localhost:5173
-```
+3. Configure your environment variables:
+   - **Development**: Edit `.rc.env` file
+   - **Production**: Edit `.prod.env` file
+
+### Environment Files
+- `.rc.env` - Development environment (gitignored)
+- `.prod.env` - Production environment (gitignored)
+- `env.example` - Template file (committed to git)
+
+The server automatically loads the correct environment file based on `NODE_ENV`:
+- Development: Uses `.rc.env`
+- Production: Uses `.prod.env`
 
 ## Development
 
-Start the development server:
+Start the development server (uses `.rc.env`):
 ```bash
 npm run dev
 ```
@@ -50,9 +59,14 @@ Build the project:
 npm run build
 ```
 
-Start the production server:
+Start the production server (uses `.prod.env`):
 ```bash
 npm start
+```
+
+Start production server in development mode (uses `.rc.env`):
+```bash
+npm run start:dev
 ```
 
 ## API Endpoints

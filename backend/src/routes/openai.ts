@@ -69,32 +69,6 @@ router.post('/dummy-request', async (req, res) => {
   }
 });
 
-// Test endpoint with external API call using axios
-router.get('/test-external', async (req, res) => {
-  try {
-    // Example external API call using axios
-    const response = await axios.get('https://jsonplaceholder.typicode.com/posts/1', {
-      timeout: 5000,
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-
-    res.json({
-      success: true,
-      message: 'External API call successful',
-      data: response.data
-    });
-
-  } catch (error: any) {
-    console.error('External API Error:', error);
-    res.status(500).json({ 
-      error: 'External API call failed',
-      message: error.message || 'Unknown error occurred'
-    });
-  }
-});
-
 // Health check for OpenAI service
 router.get('/health', async (req, res) => {
   try {
