@@ -64,6 +64,12 @@ const STEP_OPTIONS_MAP: Record<number, ISetupStepOption[]> = {
   ],
   2: [
     {
+      id: "let-fate-decide",
+      title: "🎲 Let Fate Decide",
+      description: "I'll surprise you with a unique opening scene tailored to your chosen setting.",
+      style: ESetupStepOptionStyle.Custom,
+    },
+    {
       id: "royal-summons",
       title: "🏰 The Royal Summons",
       description: "At dawn, a messenger arrives with an urgent letter from the king. He gathers the capable and the daring for a purpose not yet revealed.",
@@ -82,11 +88,11 @@ const STEP_OPTIONS_MAP: Record<number, ISetupStepOption[]> = {
       style: ESetupStepOptionStyle.Custom,
     },
     {
-      id: "let-fate-decide",
-      title: "🎲 Let Fate Decide",
-      description: "I'll surprise you with a unique opening scene tailored to your chosen setting.",
+      id: "custom",
+      title: "Custom Opening",
+      description: "Describe your own unique opening scene — or blend elements to create something new.",
       style: ESetupStepOptionStyle.Custom,
-    }
+    },
   ]
 }
 
