@@ -24,27 +24,21 @@ const STEP_OPTIONS_MAP: Record<number, ISetupStepOption[]> = {
       style: ESetupStepOptionStyle.Fantasy,
     },
     {
-      id: "dark-gothic",
-      title: "🌌 Dark Gothic",
-      description: "Haunted castles, forbidden rituals, and heroes walking the line between light and shadow.",
-      style: ESetupStepOptionStyle.Gothic,
-    },
-    {
       id: "steampunk-realms",
       title: "⚙️ Steampunk Realms",
       description: "Gears and magic power cities of brass and smoke — where science meets sorcery.",
       style: ESetupStepOptionStyle.Steampunk,
     },
     {
-      id: "grimdark-survival",
-      title: "💀 Grimdark Survival",
-      description: "In this world, hope is rare. Every victory costs blood, and heroes are hard to find.",
-      style: ESetupStepOptionStyle.Fantasy,
+      id: "post-apocalyptic",
+      title: "🔥 Post-Apocalyptic Wasteland",
+      description: "Civilization has fallen. Survivors fight for power, purpose, or simple survival in a ruined world.",
+      style: ESetupStepOptionStyle.Gothic,
     },
     {
-      id: "whimsical-fairytale",
-      title: "🪄 Whimsical Fairytale",
-      description: "A vibrant world full of wonder, absurdity, and peculiar creatures with curious rules.",
+      id: "mythic-ancient",
+      title: "🏛️ Mythic & Ancient Legends",
+      description: "Echoes of gods and heroes — epic tales set in worlds inspired by ancient myths and forgotten civilizations.",
       style: ESetupStepOptionStyle.Fantasy,
     },
     {
@@ -59,7 +53,7 @@ const STEP_OPTIONS_MAP: Record<number, ISetupStepOption[]> = {
       id: "random-heroes",
       title: "🎲 Random Heroes",
       description: "I'll generate a balanced group of adventurers with dynamic personalities.",
-      style: ESetupStepOptionStyle.Custom,
+      style: ESetupStepOptionStyle.Fantasy,
     },
     {
       id: "custom",
@@ -72,19 +66,7 @@ const STEP_OPTIONS_MAP: Record<number, ISetupStepOption[]> = {
     {
       id: "royal-summons",
       title: "🏰 The Royal Summons",
-      description: "At dawn, a messenger arrives with an urgent letter from the king.",
-      style: ESetupStepOptionStyle.Custom,
-    },
-    {
-      id: "whispering-forest",
-      title: "🌲 The Whispering Forest",
-      description: "Strange lights flicker between the trees — and the air hums with forgotten magic.",
-      style: ESetupStepOptionStyle.Custom,
-    },
-    {
-      id: "ruined-chapel",
-      title: "⛪ The Ruined Chapel",
-      description: "You awaken in a crumbling chapel, something ancient stirring beneath the stones.",
+      description: "At dawn, a messenger arrives with an urgent letter from the king. He gathers the capable and the daring for a purpose not yet revealed.",
       style: ESetupStepOptionStyle.Custom,
     },
     {
