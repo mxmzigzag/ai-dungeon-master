@@ -1,12 +1,24 @@
 import express from 'express';
 import OpenAI from 'openai';
-import axios from 'axios';
 
 const router = express.Router();
 
 // Initialize OpenAI client
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
+});
+
+// start game endpoint
+router.post('/game/start', (req, res) => {
+  console.log('Game start request received:', req.body);
+
+  res.json({ 
+    status: 'OK', 
+    message: 'Game started successfully',
+    data: req.body,
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
 });
 
 // Dummy request endpoint
@@ -65,31 +77,6 @@ router.post('/dummy-request', async (req, res) => {
     res.status(500).json({ 
       error: 'Failed to process request',
       message: error.message || 'Unknown error occurred'
-    });
-  }
-});
-
-// Health check for OpenAI service
-router.get('/health', async (req, res) => {
-  try {
-    // Simple test to verify OpenAI API key is working
-    const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [{ role: "user", content: "Hello" }],
-      max_tokens: 5,
-    });
-
-    res.json({
-      success: true,
-      message: 'OpenAI service is healthy',
-      model: completion.model
-    });
-
-  } catch (error: any) {
-    res.status(503).json({
-      success: false,
-      error: 'OpenAI service is not available',
-      message: error.message
     });
   }
 });

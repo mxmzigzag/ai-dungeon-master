@@ -22,19 +22,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
-app.use('/api/openai', openaiRouter);
-
-// Game start endpoint
-app.post('/api/game/start', (req, res) => {
-  console.log('Game start request received:', req.body);
-  res.json({ 
-    status: 'OK', 
-    message: 'Game started successfully',
-    data: req.body,
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
-  });
-});
+app.use('/api', openaiRouter);
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
