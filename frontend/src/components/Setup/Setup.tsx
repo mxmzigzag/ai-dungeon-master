@@ -51,6 +51,7 @@ const Setup: FC<ISetupProps> = ({ currentStep, onChangeStep }) => {
             id={option.id}
             title={option.title} 
             description={option.description} 
+            prompt={option.prompt}
             onClick={handleOptionClick} 
             style={option.style} 
             isActive={selectedOptions[currentStep]?.id === option.id}

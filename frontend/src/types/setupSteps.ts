@@ -15,6 +15,7 @@ interface ISetupStepOption {
   title: string;
   description?: string;
   style: ESetupStepOptionStyle;
+  prompt: string;
 }
 
 interface ISetupStepOptionWithCustomPrompt extends ISetupStepOption {

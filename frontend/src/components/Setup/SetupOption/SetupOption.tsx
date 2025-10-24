@@ -10,6 +10,7 @@ const SetupOption: FC<ISetupOptionProps> = ({
   style, 
   isActive, 
   customSettings,
+  prompt,
   onCustomChange 
 }) => {
   const optionStyles = getOptionStyles(style, isActive);
@@ -18,7 +19,7 @@ const SetupOption: FC<ISetupOptionProps> = ({
   const isCustomInputVisible = useMemo(() => isCustom && isActive, [isCustom, isActive]);
 
   const handleClick = () => {
-    onClick({ id, title, description, style });
+    onClick({ id, title, description, style, prompt });
   }
 
   return (
