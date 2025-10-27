@@ -1,25 +1,56 @@
 import { useState, type FC } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { startGameMutation } from "@api/mutations/game";
-import type { ISetupStepOption, ISetupStepOptionWithCustomPrompt } from "@/types/setupSteps";
+
 import { STEP_OPTIONS_MAP, STORYTELLING_STEPS_MAP } from "@constants/setupSteps";
+import { ESetupStep, type ISetupStepOption, type ISetupSteps } from "@/types/setupSteps";
+import { setupUtils } from "@/utils/setupUtils";
+
+import { startGameMutation } from "@api/mutations/game";
+
 import { PageLayout } from "../PageLayout/PageLayout";
 import type { ISetupProps } from "./Setup.props";
 import { StorytellingPanel } from "../StorytellingPanel";
 import { SetupOption } from "./SetupOption/SetupOption";
+import { useAppStore } from "@/stores/useAppStore";
 
 const Setup: FC<ISetupProps> = ({ currentStep, onChangeStep }) => {
-  const [selectedOptions, setSelectedOptions] = useState<Record<number, ISetupStepOption>>({});
-  const [customSettings, setCustomSettings] = useState<Record<number, string>>({});
-  
+  const {gameID} = useParams();
+  const navigate = useNavigate();
+  const { setStory } = useAppStore();
+  const [selectedOptions, setSelectedOptions] = useState<Partial<ISetupSteps>>({
+
+    [ESetupStep.Setting]: undefined,
+    [ESetupStep.Heroes]: undefined,
+    [ESetupStep.Opening]: undefined,
+  });
+  const [customSettings, setCustomSettings] = useState<Record<ESetupStep, string>>({
+    [ESetupStep.Setting]: '',
+    [ESetupStep.Heroes]: '',
+    [ESetupStep.Opening]: '',
+  });
+  const [partySize, setPartySize] = useState<number>(4);
+
+  const handlePartySizeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPartySize(Number(event.target.value));
+  }
+
   const stepTitle = STORYTELLING_STEPS_MAP[currentStep]?.title || 'unknown step';
   const promptText = STORYTELLING_STEPS_MAP[currentStep]?.prompt || 'unknown prompt';
   const stepOptions = STEP_OPTIONS_MAP[currentStep] || [];
 
   const usedSteps = Object.keys(STORYTELLING_STEPS_MAP);
 
-  const { mutate: startGame } = useMutation({
-    mutationFn: startGameMutation
+  const { mutate: startGame, isPending } = useMutation({
+    mutationFn: startGameMutation,
+    onSuccess: (data) => {
+      console.log('START GAME SUCCESS:', data);
+      navigate(`/${gameID}/game`);
+      setStory(data.data);
+    },
+    onError: (error) => {
+      console.error('START GAME ERROR:', error);
+    }
   });
   
   const handleOptionClick = (option: ISetupStepOption) => {
@@ -31,10 +62,17 @@ const Setup: FC<ISetupProps> = ({ currentStep, onChangeStep }) => {
   }
 
   const handleStartGame = () => {
-    const readyInfo: Record<number, ISetupStepOptionWithCustomPrompt > = Object.fromEntries(
+    const readyInfo: Partial<ISetupSteps> = Object.fromEntries(
       Object.entries(selectedOptions)
         .map(([key, option]) => {
-          return [Number(key), {...option, customPrompt: customSettings[Number(key)] || ''}];
+          return [
+            key, 
+            {
+              ...option, 
+              customPrompt: customSettings[key as ESetupStep] || '',
+              ...(key === ESetupStep.Heroes ? { partySize: partySize } : {}),
+            } 
+          ];
         })
     );
     startGame(readyInfo);
@@ -43,6 +81,16 @@ const Setup: FC<ISetupProps> = ({ currentStep, onChangeStep }) => {
   return (
     <PageLayout title={stepTitle}>
       <StorytellingPanel text={promptText} />
+
+      {currentStep === ESetupStep.Heroes && (
+        <div className="flex items-center gap-4">
+          <p className="text-white text-lg font-bold">Party Size:</p>
+          <input 
+            type="number" 
+            value={partySize} 
+            onChange={handlePartySizeChange} className="w-16 text-center bg-gray-900 border-2 border-gray-200 text-white rounded-md p-2" />
+        </div>
+      )}
 
       <div className="flex flex-col gap-4">
         {stepOptions.map((option) => (
@@ -65,7 +113,7 @@ const Setup: FC<ISetupProps> = ({ currentStep, onChangeStep }) => {
         {usedSteps.indexOf(currentStep.toString()) > 0 && (
           <button 
             className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors" 
-            onClick={() => onChangeStep(currentStep - 1)}
+            onClick={() => onChangeStep(setupUtils.getPreviousStep(currentStep))}
           >
               Previous Step
           </button>
@@ -74,17 +122,18 @@ const Setup: FC<ISetupProps> = ({ currentStep, onChangeStep }) => {
         {usedSteps.indexOf(currentStep.toString()) < usedSteps.length - 1 ? (
           <button 
             className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors disabled:opacity-80 disabled:bg-gray-500" 
-            onClick={() => onChangeStep(currentStep + 1)}
+            onClick={() => onChangeStep(setupUtils.getNextStep(currentStep))}
             disabled={!selectedOptions[currentStep]}
           >
             Next Step
           </button>
         ) : (
           <button 
-            className="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition-colors" 
+            className="flex items-center gap-2 bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition-colors" 
             onClick={handleStartGame}
+            disabled={isPending}
           >
-            Lets Roll!
+            Lets Roll! {isPending && <p>loading...</p>}
           </button>
         )}
       </div>

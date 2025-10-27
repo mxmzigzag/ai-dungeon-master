@@ -1,27 +1,21 @@
-import { Link, useParams } from "react-router-dom"
 import { StorytellingPanel } from "@components/StorytellingPanel/StorytellingPanel"
 import { PageLayout } from "@components/PageLayout/PageLayout"
+import { useAppStore } from "@/stores/useAppStore";
 
 export function Game() {
-  const { gameID } = useParams<{ gameID: string }>()
+  const { story } = useAppStore();
 
   return (
-    <PageLayout title={`Adventure in Progress - Game ${gameID}`}>
-      <StorytellingPanel text="Your adventure begins! What would you like to do?" />
+    <PageLayout title="Adventure in Progress">
+      <StorytellingPanel text={story} />
 
       <div className="flex gap-4">
-        <Link 
-          to={`/${gameID}/setup`}
-          className="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition-colors"
+        <button 
+          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors disabled:opacity-80 disabled:bg-gray-500"
+          disabled={true}
         >
-          Change Settings
-        </Link>
-        <Link 
-          to="/" 
-          className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors"
-        >
-          End Adventure
-        </Link>
+          Next Turn
+        </button>
       </div>
     </PageLayout>
   )

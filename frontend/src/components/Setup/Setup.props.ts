@@ -1,6 +1,8 @@
+import type { ESetupStep } from "@/types/setupSteps";
+
 interface ISetupProps {
-  currentStep: number;
-  onChangeStep: (step: number) => void;
+  currentStep: ESetupStep;
+  onChangeStep: (step: ESetupStep) => void;
 }
 
 export type { ISetupProps };
