@@ -1,5 +1,7 @@
 import express from 'express';
 import OpenAI from 'openai';
+import { getRandomHeroesPrompt, getStoryStartPrompt } from '../prompts/setup';
+import { parseGPTJson } from '../utils/common';
 
 const router = express.Router();
 
@@ -9,13 +11,56 @@ const openai = new OpenAI({
 });
 
 // start game endpoint
-router.post('/game/start', (req, res) => {
-  console.log('Game start request received:', req.body);
+router.post('/game/start', async (req, res) => {
+  const { setting, heroes, opening } = req.body;
+  const settingPrompt = setting.id === 'custom' ? setting.customPrompt : setting.prompt;
+  let heroesPrompt = heroes.id === 'custom' ? heroes.customPrompt : '';
+  const heroesList = [];
+  const openingPrompt = opening.id === 'custom' ? opening.customPrompt : opening.prompt;
+
+  if(heroes.id === 'random-heroes') {
+    const randomHeroesPrompt = getRandomHeroesPrompt(heroes.partySize, setting.title, openingPrompt, setting.tone);
+
+     const randomHeroesResponse = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [
+        {
+          role: "system",
+          content: "You are a helpful AI assistant for a dungeon master game. Keep responses concise and engaging."
+        },
+        {
+          role: "user",
+          content: randomHeroesPrompt
+        }
+      ],
+    });
+
+    const { heroesText, heroesList } = parseGPTJson(randomHeroesResponse.choices[0]?.message?.content || '{}') || { heroesText: '', heroesList: [] };
+    console.log('HERO RESPONSE:', heroesText, heroesList);
+
+    heroesPrompt = heroesText;
+    heroesList.push(...heroesList);
+  }
+
+  const startGamePrompt = getStoryStartPrompt(settingPrompt, setting.tone, setting.dmStyle, heroesPrompt, openingPrompt);
+  console.log('START GAME PROMPT:', startGamePrompt);
+
+  const startGameResponse = await openai.chat.completions.create({
+    model: "gpt-3.5-turbo",
+    messages: [
+      {
+        role: "user",
+        content: startGamePrompt
+      },
+    ],
+  });
+
+  const startGameData = startGameResponse.choices[0]?.message?.content || 'No response generated';
 
   res.json({ 
     status: 'OK', 
     message: 'Game started successfully',
-    data: req.body,
+    data: startGameData,
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development'
   });
