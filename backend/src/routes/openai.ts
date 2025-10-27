@@ -1,5 +1,6 @@
 import express from 'express';
 import OpenAI from 'openai';
+import { createClient } from '@supabase/supabase-js';
 import { getRandomHeroesPrompt, getStoryStartPrompt } from '../prompts/setup';
 import { parseGPTJson } from '../utils/common';
 
@@ -8,6 +9,16 @@ const router = express.Router();
 // Initialize OpenAI client
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
+});
+
+// Supabase client
+const supabase = createClient(process.env.SUPABASE_URL || '', process.env.SUPABASE_ANON_KEY || '');
+
+router.get('/db', async (req, res) => {
+  const {data, error} = await supabase
+  .from('heroes')
+  .select()
+  res.send(data);
 });
 
 // start game endpoint
