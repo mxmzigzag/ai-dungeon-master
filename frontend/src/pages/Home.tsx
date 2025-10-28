@@ -12,7 +12,7 @@ export function Home() {
       <StorytellingPanel text="Hello, are you ready to embark on an adventure?" />
 
       <Link 
-        to={`/${storyID}/setup`}
+        to={`/story/${storyID}/setup`}
         className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
       >
         Start Adventure
