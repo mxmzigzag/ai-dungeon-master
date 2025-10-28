@@ -13,7 +13,7 @@ function parseStringWithParams(url: string, params?: Record<string, string>): st
   return route;
 }
 
-function parseGPTJson(response: string) {
+function parseGPTJson<T>(response: string): T | null {
   // Remove Markdown code fences like ```json ... ```
   const match = response.match(/```(?:json)?([\s\S]*?)```/i);
   const jsonText = match ? match[1].trim() : response.trim();

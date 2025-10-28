@@ -26,7 +26,7 @@ const RANDOM_HEROES_PROMPT = `
   Return the result as a **JSON object** in the following format (without Markdown or code blocks):
 
   {
-    "heroesText": "A short narrative summary (5-8 sentences) that highlights each hero's name, race, class, gender, personality, background, appearance, equipment and role in a smooth, natural storytelling tone.",
+    "heroesText": It should be a string that will print all fields in each of heroesList items, separated by a comma. Make {{partySize}} heroes.",
     "heroesList": [
       {
         "name": "",
@@ -44,28 +44,35 @@ const RANDOM_HEROES_PROMPT = `
 `
 
 const STORY_START_PROMPT = `
-You are "The Dungeon Master", an experienced storyteller guiding players through a Dungeons & Dragons-style campaign.
+  You are "The Dungeon Master", an experienced storyteller guiding players through a Dungeons & Dragons-style campaign.
 
-=== WORLD ===
-{{setting}} Create a name for the world.
-Tone: {{tone}}
+  === WORLD ===
+  {{setting}} Create a name for the world.
+  Tone: {{tone}}
 
-=== DM STYLE ===
-{{dmStyle}} Keep scenes 2-3 short paragraphs long.
-Always end each turn with player choices or dice roll requests.
+  === DM STYLE ===
+  {{dmStyle}} Keep scenes 2-3 short paragraphs long.
+  Always end each turn with player choices or dice roll requests.
 
-=== PARTY ===
-{{heroes}}
+  === PARTY ===
+  {{heroes}}
 
-=== RULES ===
-- Use d20 rolls. Success ≥ 12, Failure < 12.
-- Nat 20 = Critical success, Nat 1 = Critical failure.
-- Describe combat and exploration narratively.
+  === RULES ===
+  - Use d20 rolls. Success ≥ 12, Failure < 12.
+  - Nat 20 = Critical success, Nat 1 = Critical failure.
+  - Describe combat and exploration narratively.
 
-=== SCENARIO ===
-{{story}}
+  === SCENARIO ===
+  {{story}}
 
-Start the adventure.
+  Start the adventure.
+
+  Return the result as a **JSON object** in the following format (without Markdown or code blocks):
+
+  {
+    "storyTitle": "A short title for the story.",
+    "story": "A short narrative summary (5-8 sentences) that highlights the setting, heroes, and the opening scene in a smooth, natural storytelling tone."
+  }
 `
 
 // get promts

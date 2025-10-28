@@ -3,6 +3,9 @@ import OpenAI from 'openai';
 import { createClient } from '@supabase/supabase-js';
 import { getRandomHeroesPrompt, getStoryStartPrompt } from '../prompts/setup';
 import { parseGPTJson } from '../utils/common';
+import { EDBTables } from '../enums/db';
+import { IHero, IHeroWithStoryId, IRandomHeroesCreateResponse } from '../types/heroes';
+import { IStoryStartCreateResponse } from '../types/stories';
 
 const router = express.Router();
 
@@ -14,21 +17,17 @@ const openai = new OpenAI({
 // Supabase client
 const supabase = createClient(process.env.SUPABASE_URL || '', process.env.SUPABASE_ANON_KEY || '');
 
-router.get('/db', async (req, res) => {
-  const {data, error} = await supabase
-  .from('heroes')
-  .select()
-  res.send(data);
-});
-
-// start game endpoint
-router.post('/game/start', async (req, res) => {
-  const { setting, heroes, opening } = req.body;
+// start story endpoint
+router.post('/stories/start', async (req, res) => {
+  const { setupInfo, storyID } = req.body;
+  const { setting, heroes, opening } = setupInfo;
+  // prompts
   const settingPrompt = setting.id === 'custom' ? setting.customPrompt : setting.prompt;
   let heroesPrompt = heroes.id === 'custom' ? heroes.customPrompt : '';
-  const heroesList = [];
+  let heroesList: IHero[] = [];
   const openingPrompt = opening.id === 'custom' ? opening.customPrompt : opening.prompt;
 
+  // if random heroes option selected, generate them
   if(heroes.id === 'random-heroes') {
     const randomHeroesPrompt = getRandomHeroesPrompt(heroes.partySize, setting.title, openingPrompt, setting.tone);
 
@@ -46,16 +45,20 @@ router.post('/game/start', async (req, res) => {
       ],
     });
 
-    const { heroesText, heroesList } = parseGPTJson(randomHeroesResponse.choices[0]?.message?.content || '{}') || { heroesText: '', heroesList: [] };
-    console.log('HERO RESPONSE:', heroesText, heroesList);
+    // parse the response, get the heroes text and list
+    const { heroesText, heroesList: newHeroesList } = parseGPTJson<IRandomHeroesCreateResponse>(randomHeroesResponse.choices[0]?.message?.content || '{}') || { heroesText: '', heroesList: [] };
+    console.log('HERO RESPONSE:', heroesText, newHeroesList);
 
+    // set the heroes text and list
     heroesPrompt = heroesText;
-    heroesList.push(...heroesList);
+    heroesList = newHeroesList;
   }
 
+  // get the start game prompt
   const startGamePrompt = getStoryStartPrompt(settingPrompt, setting.tone, setting.dmStyle, heroesPrompt, openingPrompt);
   console.log('START GAME PROMPT:', startGamePrompt);
 
+  // send the start game prompt to the openai api
   const startGameResponse = await openai.chat.completions.create({
     model: "gpt-3.5-turbo",
     messages: [
@@ -66,75 +69,81 @@ router.post('/game/start', async (req, res) => {
     ],
   });
 
-  const startGameData = startGameResponse.choices[0]?.message?.content || 'No response generated';
+  const { storyTitle, story } = parseGPTJson<IStoryStartCreateResponse>(startGameResponse.choices[0]?.message?.content || '{}') || { storyTitle: '', story: '' };
+  console.log('STORY START RESPONSE:', storyTitle, story);
+
+  // save the story in the database
+  const {data: storyData, error: storyError} = await supabase
+    .from(EDBTables.Stories)
+    .insert({
+      id: storyID,
+      title: storyTitle,
+      description: settingPrompt,
+      style: setting.style,
+      tone: setting.tone,
+      dmStyle: setting.dmStyle,
+    })
+    .select();
+  if(storyError) {
+    return res.status(500).json({ error: storyError.message });
+  }
+  console.log('STORY SAVED:', storyData);
+
+  // save story step in the database
+  const {data: storyStepData, error: storyStepError} = await supabase
+    .from(EDBTables.StorySteps)
+    .insert({
+      story_id: storyID,
+      text: story,
+    })
+    .select();
+  if(storyStepError) {
+    return res.status(500).json({ error: storyStepError.message });
+  }
+  console.log('STORY STEP SAVED:', storyStepData);
+
+  const heroesWithStoryId: IHeroWithStoryId[] = heroesList.map((hero) => ({
+    ...hero,
+    story_id: storyID,
+  }));
+
+  console.log('heroesWithStoryId',heroesWithStoryId)
+
+  // save heroes in the database
+  const {data: heroesData, error: heroesError} = await supabase
+    .from(EDBTables.Heroes)
+    .insert(heroesWithStoryId)
+    .select('*');
+  if(heroesError) {
+    return res.status(500).json({ error: heroesError.message });
+  }
+  console.log('HEROES SAVED:', heroesData);
 
   res.json({ 
     status: 'OK', 
     message: 'Game started successfully',
-    data: startGameData,
+    data: story,
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development'
   });
 });
 
-// Dummy request endpoint
-router.post('/dummy-request', async (req, res) => {
-  try {
-    const { message } = req.body;
-
-    if (!message) {
-      return res.status(400).json({ error: 'Message is required' });
-    }
-
-    // Make a dummy request to OpenAI
-    const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [
-        {
-          role: "system",
-          content: "You are a helpful AI assistant for a dungeon master game. Keep responses concise and engaging."
-        },
-        {
-          role: "user",
-          content: message
-        }
-      ],
-      max_tokens: 150,
-      temperature: 0.7,
-    });
-
-    const response = completion.choices[0]?.message?.content || 'No response generated';
-
-    res.json({
-      success: true,
-      response,
-      usage: completion.usage,
-      model: completion.model
-    });
-
-  } catch (error: any) {
-    console.error('OpenAI API Error:', error);
-    
-    // Handle specific OpenAI errors
-    if (error.code === 'insufficient_quota') {
-      return res.status(402).json({ 
-        error: 'OpenAI API quota exceeded',
-        message: 'Please check your OpenAI API key and billing'
-      });
-    }
-    
-    if (error.code === 'invalid_api_key') {
-      return res.status(401).json({ 
-        error: 'Invalid OpenAI API key',
-        message: 'Please check your OPENAI_API_KEY environment variable'
-      });
-    }
-
-    res.status(500).json({ 
-      error: 'Failed to process request',
-      message: error.message || 'Unknown error occurred'
-    });
+router.get('/stories/:storyID', async (req, res) => {
+  const { storyID } = req.params;
+  const { data, error } = await supabase
+    .from(EDBTables.Stories)
+    .select('id, title, description, style, tone, dmStyle, heroes (*), story_steps (*)')
+    .eq('id', storyID);
+  if (error) {
+    return res.status(500).json({ error: error.message });
   }
+  res.json({
+    status: 'OK',
+    message: 'Story fetched successfully',
+    data: data,
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
 });
 
 export { router as openaiRouter };
