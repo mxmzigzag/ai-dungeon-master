@@ -1,15 +1,17 @@
 import { Routes, Route } from 'react-router-dom'
 import { Home } from '@pages/Home'
 import { SetupPage } from '@pages/Setup'
-import { Story } from '@/pages/Story'
+import { Story } from '@pages/Story'
 import { NotFound } from '@pages/NotFound'
+import { StoriesList } from '@pages/StoriesList'
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/story/:storyID/setup" element={<SetupPage />} />
-      <Route path="/story/:storyID" element={<Story />} />
+      <Route path="/stories/:storyID/setup" element={<SetupPage />} />
+      <Route path="/stories/:storyID" element={<Story />} />
+      <Route path="/stories" element={<StoriesList />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   )

@@ -43,7 +43,7 @@ const Setup: FC<ISetupProps> = ({ currentStep, onChangeStep }) => {
     mutationFn: startStoryMutation,
     onSuccess: (data) => {
       console.log('START GAME SUCCESS:', data);
-      navigate(`/story/${storyID}`);
+      navigate(`/stories/${storyID}`);
     },
     onError: (error) => {
       console.error('START GAME ERROR:', error);

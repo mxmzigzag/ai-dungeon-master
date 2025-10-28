@@ -11,12 +11,20 @@ export function Home() {
     <PageLayout title="AI Dungeon Master">
       <StorytellingPanel text="Hello, are you ready to embark on an adventure?" />
 
-      <Link 
-        to={`/story/${storyID}/setup`}
-        className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
-      >
-        Start Adventure
-      </Link>
+      <div className="flex items-center gap-4 ">
+        <Link 
+          to={`/stories/${storyID}/setup`}
+          className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
+        >
+          Start New Adventure
+        </Link>
+        <Link 
+          to={`/stories`}
+          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
+        >
+          My Adventures
+        </Link>
+      </div>
   </PageLayout>
   )
 }
