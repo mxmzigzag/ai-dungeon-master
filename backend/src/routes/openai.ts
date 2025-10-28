@@ -138,11 +138,9 @@ router.get('/stories/:storyID', async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
   res.json({
-    status: 'OK',
-    message: 'Story fetched successfully',
-    data: data,
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+    data: data[0],
+    code: 200,
+    status: 'success'
   });
 });
 
