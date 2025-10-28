@@ -40,13 +40,13 @@ export function StoriesList() {
                     <IconDelete color='#fff' width={16} height={16} />
                   </button>
                   <h2 className="text-lg font-bold text-[#00a67d] text-center">{story.title}</h2>
-                  <p className="text-sm text-gray-400">Style: {story.style}</p>
-                  <p className="text-sm text-gray-200">Description: {story.description}</p>
+                  <p className="text-sm text-gray-400"><span className="text-[#00a67d]">Style:</span> {story.style}</p>
+                  <p className="text-sm text-gray-200">{story.description}</p>
                   <div className="flex flex-col gap-2">
                     <p className="text-sm text-center text-[#00a67d]">Heroes</p>
                     {story.heroes.map(hero => (
                       <div key={hero.id} className="flex items-center gap-2">
-                        <p className="text-sm text-gray-400">{hero.name} - {hero.race} - {hero.class}</p>
+                        <p className="text-sm text-gray-400">&#x2022; {hero.name} - {hero.race} - {hero.class}</p>
                       </div>
                     ))}
 
