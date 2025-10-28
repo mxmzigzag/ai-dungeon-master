@@ -128,6 +128,7 @@ router.post('/stories/start', async (req, res) => {
   });
 });
 
+// get story by id endpoint
 router.get('/stories/:storyID', async (req, res) => {
   const { storyID } = req.params;
   const { data, error } = await supabase
@@ -139,6 +140,22 @@ router.get('/stories/:storyID', async (req, res) => {
   }
   res.json({
     data: data[0],
+    code: 200,
+    status: 'success'
+  });
+});
+
+// get stories list endpoint
+router.get('/stories', async (req, res) => {
+  const { data, error } = await supabase
+    .from(EDBTables.Stories)
+    .select('id, title, description, style');
+
+  if (error) {
+    return res.status(500).json({ error: error.message });
+  }
+  res.json({
+    data,
     code: 200,
     status: 'success'
   });
