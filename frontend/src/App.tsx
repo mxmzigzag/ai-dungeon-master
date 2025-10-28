@@ -8,8 +8,8 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/:gameID/setup" element={<SetupPage />} />
-      <Route path="/:gameID/game" element={<Game />} />
+      <Route path="/:storyID/setup" element={<SetupPage />} />
+      <Route path="/:storyID/story" element={<Game />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   )

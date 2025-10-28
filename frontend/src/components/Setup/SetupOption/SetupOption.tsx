@@ -11,7 +11,9 @@ const SetupOption: FC<ISetupOptionProps> = ({
   isActive, 
   customSettings,
   prompt,
-  onCustomChange 
+  onCustomChange,
+  dmStyle,
+  tone
 }) => {
   const optionStyles = getOptionStyles(style, isActive);
 
@@ -19,7 +21,7 @@ const SetupOption: FC<ISetupOptionProps> = ({
   const isCustomInputVisible = useMemo(() => isCustom && isActive, [isCustom, isActive]);
 
   const handleClick = () => {
-    onClick({ id, title, description, style, prompt });
+    onClick({ id, title, description, style, prompt, ...(dmStyle && { dmStyle }), ...(tone && { tone }) });
   }
 
   return (

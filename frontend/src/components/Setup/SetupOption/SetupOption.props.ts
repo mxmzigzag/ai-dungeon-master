@@ -5,6 +5,8 @@ interface ISetupOptionProps {
   title: string;
   description?: string;  
   style: ESetupStepOptionStyle;
+  dmStyle: string;
+  tone: string;
   isActive: boolean;
   prompt: string;
   customSettings: string;

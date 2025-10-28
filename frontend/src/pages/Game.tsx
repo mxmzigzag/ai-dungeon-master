@@ -1,13 +1,22 @@
 import { StorytellingPanel } from "@components/StorytellingPanel/StorytellingPanel"
 import { PageLayout } from "@components/PageLayout/PageLayout"
-import { useAppStore } from "@/stores/useAppStore";
+import { useQuery } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
+import { getStoryQuery } from "@api/queries/stories";
+import { useMemo } from "react";
 
 export function Game() {
-  const { story } = useAppStore();
+  const { storyID } = useParams();
+
+  const { data: storyData, isLoading } = useQuery({
+    queryKey: ['story', storyID],
+    queryFn: () => getStoryQuery(storyID!),
+  });
+  const story = useMemo(() => storyData?.data[0] ?? [], [storyData]);
 
   return (
     <PageLayout title="Adventure in Progress">
-      <StorytellingPanel text={story} />
+      <StorytellingPanel text={isLoading ? 'Loading...' : story.story_steps[0].text} />
 
       <div className="flex gap-4">
         <button 

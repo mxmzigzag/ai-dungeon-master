@@ -47,4 +47,4 @@ interface ISetupStepOptionsMap {
 }
 
 export { ESetupStep, ESetupStepOptionStyle }
-export type { ISetupStorytellingValue, ISetupStepOption, ISetupStepHeroesOption, ISetupSteps, ISetupStepOptionsMap };
+export type { ISetupStorytellingValue, ISetupStepOption, ISetupStepSettingOption, ISetupStepHeroesOption, ISetupSteps, ISetupStepOptionsMap };

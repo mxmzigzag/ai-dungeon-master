@@ -3,21 +3,19 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 
 import { STEP_OPTIONS_MAP, STORYTELLING_STEPS_MAP } from "@constants/setupSteps";
-import { ESetupStep, type ISetupStepOption, type ISetupSteps } from "@/types/setupSteps";
+import { ESetupStep, type ISetupStepOption, type ISetupSteps, type ISetupStepSettingOption } from "@/types/setupSteps";
 import { setupUtils } from "@/utils/setupUtils";
 
-import { startGameMutation } from "@api/mutations/game";
+import { startStoryMutation } from "@api/mutations/stories";
 
 import { PageLayout } from "../PageLayout/PageLayout";
 import type { ISetupProps } from "./Setup.props";
 import { StorytellingPanel } from "../StorytellingPanel";
 import { SetupOption } from "./SetupOption/SetupOption";
-import { useAppStore } from "@/stores/useAppStore";
 
 const Setup: FC<ISetupProps> = ({ currentStep, onChangeStep }) => {
-  const {gameID} = useParams();
+  const { storyID } = useParams();
   const navigate = useNavigate();
-  const { setStory } = useAppStore();
   const [selectedOptions, setSelectedOptions] = useState<Partial<ISetupSteps>>({
 
     [ESetupStep.Setting]: undefined,
@@ -41,12 +39,11 @@ const Setup: FC<ISetupProps> = ({ currentStep, onChangeStep }) => {
 
   const usedSteps = Object.keys(STORYTELLING_STEPS_MAP);
 
-  const { mutate: startGame, isPending } = useMutation({
-    mutationFn: startGameMutation,
+  const { mutate: startStory, isPending } = useMutation({
+    mutationFn: startStoryMutation,
     onSuccess: (data) => {
       console.log('START GAME SUCCESS:', data);
-      navigate(`/${gameID}/game`);
-      setStory(data.data);
+      navigate(`/${storyID}/story`);
     },
     onError: (error) => {
       console.error('START GAME ERROR:', error);
@@ -61,7 +58,7 @@ const Setup: FC<ISetupProps> = ({ currentStep, onChangeStep }) => {
     setCustomSettings({ ...customSettings, [currentStep]: event.target.value });
   }
 
-  const handleStartGame = () => {
+  const handleStartStory = () => {
     const readyInfo: Partial<ISetupSteps> = Object.fromEntries(
       Object.entries(selectedOptions)
         .map(([key, option]) => {
@@ -75,7 +72,7 @@ const Setup: FC<ISetupProps> = ({ currentStep, onChangeStep }) => {
           ];
         })
     );
-    startGame(readyInfo);
+    startStory({ setupInfo: readyInfo, storyID: storyID! });
   }
 
   return (
@@ -102,6 +99,8 @@ const Setup: FC<ISetupProps> = ({ currentStep, onChangeStep }) => {
             prompt={option.prompt}
             onClick={handleOptionClick} 
             style={option.style} 
+            dmStyle={(option as ISetupStepSettingOption).dmStyle}
+            tone={(option as ISetupStepSettingOption).tone}
             isActive={selectedOptions[currentStep]?.id === option.id}
             customSettings={customSettings[currentStep]}
             onCustomChange={handleCustomChange}
@@ -130,7 +129,7 @@ const Setup: FC<ISetupProps> = ({ currentStep, onChangeStep }) => {
         ) : (
           <button 
             className="flex items-center gap-2 bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition-colors" 
-            onClick={handleStartGame}
+            onClick={handleStartStory}
             disabled={isPending}
           >
             Lets Roll! {isPending && <p>loading...</p>}
