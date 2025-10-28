@@ -161,4 +161,23 @@ router.get('/stories', async (req, res) => {
   });
 });
 
+// delete story endpoint
+router.delete('/stories/:storyID', async (req, res) => {
+  const { storyID } = req.params;
+  const { data, error } = await supabase
+    .from(EDBTables.Stories)
+    .delete()
+    .eq('id', storyID);
+
+  if (error) {
+    return res.status(500).json({ error: error.message });
+  }
+  
+  res.json({
+    data,
+    code: 200,
+    status: 'success'
+  });
+});
+
 export { router as openaiRouter };
