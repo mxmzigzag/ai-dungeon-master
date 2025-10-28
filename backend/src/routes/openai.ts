@@ -149,7 +149,7 @@ router.get('/stories/:storyID', async (req, res) => {
 router.get('/stories', async (req, res) => {
   const { data, error } = await supabase
     .from(EDBTables.Stories)
-    .select('id, title, description, style');
+    .select('id, title, description, style, heroes (*)');
 
   if (error) {
     return res.status(500).json({ error: error.message });
