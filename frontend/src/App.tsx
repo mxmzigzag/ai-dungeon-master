@@ -3,7 +3,7 @@ import { Home } from '@pages/Home'
 import { SetupPage } from '@pages/Setup'
 import { Story } from '@pages/Story'
 import { NotFound } from '@pages/NotFound'
-import { StoriesList } from '@pages/StoriesList'
+import { StoriesListPage } from '@pages/StoriesList'
 
 function App() {
   return (
@@ -11,7 +11,7 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/stories/:storyID/setup" element={<SetupPage />} />
       <Route path="/stories/:storyID" element={<Story />} />
-      <Route path="/stories" element={<StoriesList />} />
+      <Route path="/stories" element={<StoriesListPage />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   )

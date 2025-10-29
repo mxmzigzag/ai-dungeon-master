@@ -1,14 +1,16 @@
 import { useMemo } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
+
 import type { IStory } from "@/types/story";
 import { queryClient } from "@api/queries/queryClient";
 import { deleteStoryMutation } from "@api/mutations/stories";
 import { getStoriesListQuery } from "@api/queries/stories";
-import { PageLayout } from "@components/PageLayout/PageLayout"
-import { IconDelete } from "@/icons";
 
-export function StoriesList() {
+import { PageLayout } from "@components/PageLayout"
+import { StoriesList } from "@components/StoriesList";
+
+export function StoriesListPage() {
   const { storyID } = useParams();
 
   const { data: storiesListData, isLoading } = useQuery({
@@ -29,32 +31,7 @@ export function StoriesList() {
       {isLoading ? (
         <div>Loading...</div>
       ) : (
-        <div className="grid grid-cols-3 gap-4">
-            {storiesList.map((story) => (
-              <Link key={story.id} to={`/stories/${story.id}`}>
-                <div className="flex flex-col gap-2 bg-neutral-900 rounded-2xl shadow-md p-4 w-full max-w-2xl relative group">
-                  <button className="absolute top-3 right-3 bg-[#2e2e2e] rounded-md p-2 hover:bg-[#00a67d] cursor-pointer hidden group-hover:block" onClick={(e) => {
-                    e.preventDefault();
-                    deleteStory(story.id);
-                  }}>
-                    <IconDelete color='#fff' width={16} height={16} />
-                  </button>
-                  <h2 className="text-lg font-bold text-[#00a67d] text-center">{story.title}</h2>
-                  <p className="text-sm text-gray-400"><span className="text-[#00a67d]">Style:</span> {story.style}</p>
-                  <p className="text-sm text-gray-200">{story.description}</p>
-                  <div className="flex flex-col gap-2">
-                    <p className="text-sm text-center text-[#00a67d]">Heroes</p>
-                    {story.heroes.map(hero => (
-                      <div key={hero.id} className="flex items-center gap-2">
-                        <p className="text-sm text-gray-400">&#x2022; {hero.name} - {hero.race} - {hero.class}</p>
-                      </div>
-                    ))}
-
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
+       <StoriesList stories={storiesList} onDeleteStory={deleteStory} />
       )}
     </PageLayout>
   )

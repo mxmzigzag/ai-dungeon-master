@@ -1,10 +1,12 @@
-import { StorytellingPanel } from "@components/StorytellingPanel/StorytellingPanel"
-import { PageLayout } from "@components/PageLayout/PageLayout"
-import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
-import { getStoryByIdQuery } from "@api/queries/stories";
 import { useMemo } from "react";
+import { useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+
 import type { IStory } from "@/types/story";
+import { getStoryByIdQuery } from "@api/queries/stories";
+
+import { PageLayout } from "@components/PageLayout"
+import { StorytellingPanel } from "@components/StorytellingPanel"
 
 export function Story() {
   const { storyID } = useParams();

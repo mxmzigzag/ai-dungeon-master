@@ -1,4 +1,5 @@
 export { Home } from './Home'
 export { SetupPage } from './Setup'
-export { Game } from './Story'
+export { Story } from './Story'
 export { NotFound } from './NotFound'
+export { StoriesListPage } from './StoriesList'

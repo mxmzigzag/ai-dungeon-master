@@ -1,5 +1,5 @@
-import { Setup } from "@components/Setup/Setup"
-import { useAppStore } from "@/stores/useAppStore";
+import { useAppStore } from "@stores/useAppStore";
+import { Setup } from "@components/Setup"
 
 export function SetupPage() {
   const { setupStep, changeSetupStep } = useAppStore();
